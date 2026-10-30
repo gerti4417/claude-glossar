@@ -12,7 +12,16 @@ Am Prompt einer Claude-Code-Session im Terminal:
 
 Danach `y` für „Add marketplace?“, dann mit Enter den Geltungsbereich *user* wählen. Der Mod läuft ab diesem Moment, in jeder späteren Session von selbst.
 
-Aus der Shell geht dasselbe mit `claude plugin install glossar --marketplace gerti4417/claude-glossar`. In der Desktop-App, wo `/plugin` nicht läuft: auf **+** neben dem Eingabefeld klicken, dann *Plugins*, *Add marketplace* mit `gerti4417/claude-glossar`, dann *Add plugin*.
+`/plugin` gibt es nur in einer Terminal-Session. In VS Code und in der Desktop-App antwortet es mit „isn’t available in this environment“. Dann stattdessen aus der Shell, zwei Zeilen:
+
+```
+claude plugin marketplace add gerti4417/claude-glossar
+claude plugin install glossar@claude-glossar --scope user
+```
+
+Danach in einer laufenden Session `/reload-plugins`, oder einfach eine neue Session starten. In der Desktop-App geht es auch per Klick: **+** neben dem Eingabefeld, dann *Plugins*, *Add marketplace* mit `gerti4417/claude-glossar`, dann *Add plugin*.
+
+Braucht Claude Code ab Version 2.1.312; ein älteres `claude` meldet beim Laden einen Fehler, der mit `claude update` verschwindet.
 
 **Was er tut**
 
