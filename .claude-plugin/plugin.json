@@ -26,8 +26,14 @@
     "datei": {
       "type": "string",
       "title": "Glossar-Datei",
-      "description": "Wohin neue Erklärungen angehängt werden, relativ zu deinem Benutzerordner oder als absoluter Pfad. Leer: keine Datei, nur das Pane.",
+      "description": "Wohin neue Erklärungen angehängt werden, relativ zu deinem Benutzerordner (z. B. .claude/glossar.md oder ~/Notizen/begriffe.md) oder als absoluter Pfad.",
       "default": ".claude/glossar.md"
+    },
+    "mitschreiben": {
+      "type": "boolean",
+      "title": "Erklärungen in eine Datei schreiben",
+      "description": "Aus: nur das Glossar-Fenster, keine Datei.",
+      "default": true
     }
   }
 }

@@ -2,7 +2,7 @@
 
 Ein Mod für Claude Code: Er erkennt in Claudes Antworten Fachbegriffe, die du vermutlich erklärt brauchst, und erklärt sie dir. Die Begriffe stehen als Chips unter der Antwort und gesammelt in einem Glossar-Fenster. Gedacht für Leute, die mit Claude Code arbeiten, aber nicht selbst programmieren.
 
-*English: a Claude Code mod that spots jargon in Claude's answers and explains it in a side pane. Set the language to English on install.*
+*English: a Claude Code mod that spots jargon in Claude's answers and explains it in a side pane. Set the language to English on install; the explanations are then in English, the pane's labels stay German for now.*
 
 ## Installation
 
@@ -38,7 +38,8 @@ Du füllst sie bei der Installation aus und änderst sie später unter `/config`
 | --- | --- | --- |
 | **Wer liest mit?** | Ein Satz über dich, damit die Erklärungen passen, z. B. „Projektleiterin im Marketing, kennt Excel und WordPress, programmiert nicht“. | Jemand, der Code lesen, aber nicht selbst schreiben kann. |
 | **Sprache der Erklärungen** | Deutsch (Du-Form) oder English. | Deutsch |
-| **Glossar-Datei** | Wohin neue Erklärungen angehängt werden, relativ zu deinem Benutzerordner (`.claude/glossar.md`, `~/Notizen/begriffe.md`) oder als absoluter Pfad. | `.claude/glossar.md`. Ein leeres Feld schaltet die Datei ab, dann gibt es nur das Fenster. |
+| **Erklärungen in eine Datei schreiben** | An: Jede neue Erklärung wird an die Glossar-Datei angehängt. Aus: nur das Fenster. | An |
+| **Glossar-Datei** | Wohin neue Erklärungen angehängt werden, relativ zu deinem Benutzerordner (`.claude/glossar.md`, `~/Notizen/begriffe.md`) oder als absoluter Pfad. Lässt sich die Datei nicht schreiben, erscheint ein Hinweis in der Statuszeile. | `.claude/glossar.md` |
 
 ## Was er tut
 
@@ -47,7 +48,7 @@ Du füllst sie bei der Installation aus und änderst sie später unter `/config`
 - Unter der Antwort, in der ein Begriff zum ersten Mal in der Sitzung vorkommt, steht er als Chip. Ein Klick öffnet das Fenster mit der Erklärung.
 - Das Fenster „Glossar“ listet alle Begriffe der Sitzung alphabetisch. Fährst du mit der Maus über einen Begriff, werden die passenden Chips im Chat hervorgehoben, und umgekehrt.
 - `/glossar` öffnet das Fenster, Esc schließt es.
-- Jede neue Erklärung wird an deine Glossar-Datei angehängt, als Zeile `- **Begriff** — Erklärung · Projektordner · Datum`, nie doppelt.
+- Jede neue Erklärung wird an deine Glossar-Datei angehängt, als Zeile `- **Begriff** — Erklärung · Projektordner · Datum`, nie doppelt. Ein Begriff gilt erst als erklärt, wenn er in der Datei steht.
 
 ## Kosten und Datenschutz
 

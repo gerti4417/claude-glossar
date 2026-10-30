@@ -90,6 +90,8 @@ export const register: Register = (on, options) => {
     profile: typeof options.profil === 'string' ? options.profil : '',
     language: (options.sprache === 'English' ? 'English' : 'Deutsch') as Language,
     file: typeof options.datei === 'string' ? options.datei : '.claude/glossar.md',
+    // A separate switch: an empty text field is not stored on a first install, so it cannot mean "off".
+    write: options.mitschreiben !== false,
   }
 
   on('session.start', async ($, e, next) => {
@@ -187,8 +189,8 @@ export const register: Register = (on, options) => {
 
       const fresh = reply.isAnswered ? parseTerms(reply.text) : []
       const at = await $.clock.now()
-      const home = (await $.env.get('HOME')) ?? ''
-      const path = glossaryPath(home, settings.file)
+      const home = (await $.env.get('HOME')) ?? (await $.env.get('USERPROFILE')) ?? ''
+      const path = settings.write ? glossaryPath(home, settings.file) : null
       const cwd = await $.env.get('PWD')
       const context = cwd ? cwd.split('/').pop() ?? '' : ''
       let file: string | null = null
@@ -209,8 +211,17 @@ export const register: Register = (on, options) => {
         }
       }
 
-      if (fresh.length > 0) await $.store.set(STORE_KEY, stored)
-      if (file !== null && path) await $.fs.write(path, file)
+      // The file first: a term counts as explained only once it is where the person reads it.
+      let isFileWritten = true
+      if (file !== null && path) {
+        try {
+          await $.fs.write(path, file)
+        } catch {
+          isFileWritten = false
+          $.ui.status(`Glossar-Datei nicht schreibbar: ${path}. Pfad unter /config prüfen.`)
+        }
+      }
+      if (fresh.length > 0 && isFileWritten) await $.store.set(STORE_KEY, stored)
       if (found.length > 0) {
         // Deduplicate on write: a reload's rebuild may have added the same terms while the model call ran.
         await update($, terms, list => {

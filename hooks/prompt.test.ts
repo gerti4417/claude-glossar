@@ -26,3 +26,9 @@ test('the glossary file sits in the home folder unless switched off', async () =
   expect(glossaryPath('/Users/oli', '')).toBeNull()
   expect(glossaryPath('', '.claude/glossar.md')).toBeNull()
 })
+
+test('a bare ~ is no file, Windows paths count as absolute', async () => {
+  expect(glossaryPath('/Users/oli', '~')).toBeNull()
+  expect(glossaryPath('/Users/oli', '~/')).toBeNull()
+  expect(glossaryPath('', 'C:\\Users\\oli\\glossar.md')).toBe('C:\\Users\\oli\\glossar.md')
+})

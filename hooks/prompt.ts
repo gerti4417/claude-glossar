@@ -21,12 +21,12 @@ Antworte NUR mit einem JSON-Array, ohne Markdown, ohne Text davor oder danach: [
 
 /**
  * Where new explanations are appended: relative paths and `~/` start in the home folder, absolute paths
- * stay as they are. An empty setting (or no home folder) switches the file off.
+ * stay as they are (also Windows ones like C:\\…). An empty setting, a bare ~ or no home folder means no file.
  */
 export function glossaryPath(home: string, file: string): string | null {
   const f = file.trim()
-  if (f === '') return null
-  if (f.startsWith('/')) return f
+  if (f === '' || f === '~' || f === '~/') return null
+  if (f.startsWith('/') || /^[A-Za-z]:[\\/]/.test(f)) return f
   if (!home) return null
   return `${home}/${f.startsWith('~/') ? f.slice(2) : f}`
 }
