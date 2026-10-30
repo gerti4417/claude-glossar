@@ -1,0 +1,12 @@
+{
+  "name": "claude-glossar",
+  "description": "Mods für Claude Code von Gerrit Lemkau, gebaut für Leute, die Code lesen, aber nicht schreiben.",
+  "owner": { "name": "Gerrit Lemkau" },
+  "plugins": [
+    {
+      "name": "glossar",
+      "source": "./",
+      "description": "Fachbegriffe aus Claudes Antworten, erklärt für Nicht-Entwickler: als Chips unter der Antwort und als Glossar-Pane rechts. /glossar öffnet das Pane."
+    }
+  ]
+}

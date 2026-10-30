@@ -1,0 +1,9 @@
+{
+  "name": "glossar",
+  "version": "0.1.0",
+  "description": "Erkennt in Claudes Antworten Fachbegriffe, die ein Nicht-Entwickler erklärt braucht, zeigt sie als Chips unter der Antwort und in einem Glossar-Pane rechts; Hover hebt beide Seiten hervor, /glossar öffnet das Pane. Erklärungen landen global in ~/.claude/glossar.md.",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Gerrit Lemkau"
+  }
+}
