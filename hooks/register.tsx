@@ -2,10 +2,10 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Block, Term } from '../types'
+import { glossaryPath, systemPrompt, type Language } from './prompt'
 
 const PANE = 'glossar'
 const STORE_KEY = 'glossary-1'
-const GLOSSARY_FILE = '.claude/glossar.md'
 const OPEN = { id: PANE, title: 'Glossar', focus: true, closeOnEscape: true, columns: 48 } as const
 
 // The terms this session has met, in the order they were met.
@@ -19,10 +19,6 @@ const isBusy = atom({ plugin: 'glossar', key: 'isBusy' } as const, false)
 
 // What the global store keeps across sessions and projects: every term ever explained.
 type Stored = Record<string, { term: string; explanation: string; context: string; date: string }>
-
-const SYSTEM = `Du hilfst einem erfahrenen Nicht-Entwickler (Head of AI in einer Kommunikationsagentur, baut Automatisierungen mit n8n, versteht Architektur, kann aber nicht programmieren), Fachbegriffe in Antworten eines Coding-Assistenten zu verstehen.
-Du bekommst eine Antwort des Assistenten. Nenne die Fachbegriffe, Abkürzungen und Konzepte darin, die diese Person vermutlich nicht sicher kennt: Begriffe aus Programmierung, Infrastruktur, Datenbanken, Protokollen, Tooling. Keine Alltagswörter, keine Produktnamen, die nur Namen sind, keine Begriffe, die in der Antwort selbst schon erklärt werden, und keine aus der Liste bekannter Begriffe.
-Antworte NUR mit einem JSON-Array, ohne Markdown, ohne Text davor oder danach: [{"begriff": "...", "erklaerung": "..."}]. Der Begriff genau so geschrieben wie in der Antwort. Die Erklärung auf Deutsch, Du-Form, ein bis zwei Sätze, konkret, auf Anwendungsebene. Höchstens 8 Einträge; ein leeres Array [] wenn nichts zu erklären ist.`
 
 function slugOf(term: string): string {
   return term
@@ -88,7 +84,16 @@ function parseTerms(text: string): Array<{ term: string; explanation: string }> 
   }
 }
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  // The three settings each person fills in on install (plugin.json userConfig); empty means the default.
+  const settings = {
+    profile: typeof options.profil === 'string' ? options.profil : '',
+    language: (options.sprache === 'English' ? 'English' : 'Deutsch') as Language,
+    file: typeof options.datei === 'string' ? options.datei : '.claude/glossar.md',
+    // A separate switch: an empty text field is not stored on a first install, so it cannot mean "off".
+    write: options.mitschreiben !== false,
+  }
+
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'glossar',
@@ -175,7 +180,7 @@ export const register: Register = on => {
       const knownNames = [...known.map(k => k.term), ...Object.values(stored).map(s => s.term)]
       const reply = await $.model.complete({
         model: 'haiku',
-        system: SYSTEM,
+        system: systemPrompt(settings),
         prompt: `Bekannte Begriffe (nicht nennen): ${knownNames.join(', ') || '(keine)'}\n\nAntwort des Assistenten:\n\n${answer.slice(0, 12000)}`,
         effort: 'low',
         maxTokens: 1200,
@@ -184,7 +189,8 @@ export const register: Register = on => {
 
       const fresh = reply.isAnswered ? parseTerms(reply.text) : []
       const at = await $.clock.now()
-      const home = (await $.env.get('HOME')) ?? ''
+      const home = (await $.env.get('HOME')) ?? (await $.env.get('USERPROFILE')) ?? ''
+      const path = settings.write ? glossaryPath(home, settings.file) : null
       const cwd = await $.env.get('PWD')
       const context = cwd ? cwd.split('/').pop() ?? '' : ''
       let file: string | null = null
@@ -196,8 +202,7 @@ export const register: Register = on => {
         if (!stored[slug]) {
           stored[slug] = { term: one.term, explanation: one.explanation, context, date: today(at) }
           // Mirror into the person's own glossary file, one line per term, never twice.
-          if (home) {
-            const path = `${home}/${GLOSSARY_FILE}`
+          if (path) {
             const current: string = file ?? ((await $.fs.exists(path)) ? await $.fs.read(path) : '# Glossar\n')
             file = current.includes(`- **${one.term}**`)
               ? current
@@ -206,8 +211,17 @@ export const register: Register = on => {
         }
       }
 
-      if (fresh.length > 0) await $.store.set(STORE_KEY, stored)
-      if (file !== null && home) await $.fs.write(`${home}/${GLOSSARY_FILE}`, file)
+      // The file first: a term counts as explained only once it is where the person reads it.
+      let isFileWritten = true
+      if (file !== null && path) {
+        try {
+          await $.fs.write(path, file)
+        } catch {
+          isFileWritten = false
+          $.ui.status(`Glossar-Datei nicht schreibbar: ${path}. Pfad unter /config prüfen.`)
+        }
+      }
+      if (fresh.length > 0 && isFileWritten) await $.store.set(STORE_KEY, stored)
       if (found.length > 0) {
         // Deduplicate on write: a reload's rebuild may have added the same terms while the model call ran.
         await update($, terms, list => {

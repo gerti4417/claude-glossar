@@ -1,9 +1,39 @@
 {
   "name": "glossar",
-  "version": "0.1.0",
-  "description": "Erkennt in Claudes Antworten Fachbegriffe, die ein Nicht-Entwickler erklärt braucht, zeigt sie als Chips unter der Antwort und in einem Glossar-Pane rechts; Hover hebt beide Seiten hervor, /glossar öffnet das Pane. Erklärungen landen global in ~/.claude/glossar.md.",
+  "version": "0.2.0",
+  "description": "Erkennt in Claudes Antworten Fachbegriffe, die du erklärt brauchst, zeigt sie als Chips unter der Antwort und in einem Glossar-Pane; /glossar öffnet das Pane. Wer mitliest, in welcher Sprache erklärt wird und wohin die Erklärungen geschrieben werden, stellst du bei der Installation ein.",
   "types": "./types/index.d.ts",
   "author": {
     "name": "Gerrit Lemkau"
+  },
+  "userConfig": {
+    "profil": {
+      "type": "string",
+      "title": "Wer liest mit?",
+      "description": "Ein Satz über dich, damit die Erklärungen passen, z. B. „Projektleiterin im Marketing, kennt Excel und WordPress, programmiert nicht“. Leer: jemand, der Code lesen, aber nicht selbst schreiben kann.",
+      "default": ""
+    },
+    "sprache": {
+      "type": "string",
+      "title": "Sprache der Erklärungen",
+      "description": "Deutsch (Du-Form) oder English.",
+      "options": [
+        "Deutsch",
+        "English"
+      ],
+      "default": "Deutsch"
+    },
+    "datei": {
+      "type": "string",
+      "title": "Glossar-Datei",
+      "description": "Wohin neue Erklärungen angehängt werden, relativ zu deinem Benutzerordner (z. B. .claude/glossar.md oder ~/Notizen/begriffe.md) oder als absoluter Pfad.",
+      "default": ".claude/glossar.md"
+    },
+    "mitschreiben": {
+      "type": "boolean",
+      "title": "Erklärungen in eine Datei schreiben",
+      "description": "Aus: nur das Glossar-Fenster, keine Datei.",
+      "default": true
+    }
   }
 }
