@@ -19,7 +19,16 @@ claude plugin marketplace add gerti4417/claude-glossar
 claude plugin install glossar@claude-glossar --scope user
 ```
 
-Danach in einer laufenden Session `/reload-plugins`, oder einfach eine neue Session starten. In der Desktop-App geht es auch per Klick: **+** neben dem Eingabefeld, dann *Plugins*, *Add marketplace* mit `gerti4417/claude-glossar`, dann *Add plugin*.
+Danach in einer laufenden Session `/reload-plugins`, oder einfach eine neue Session starten.
+
+**In der Claude-App** (Bereich *Code*) geht es ohne Tippen, und ohne GitHub-Konto:
+
+1. **+** neben dem Eingabefeld, dann **Plugins**
+2. **Add marketplace**, eintragen: `gerti4417/claude-glossar`
+3. **Add plugin**, `glossar` auswählen
+4. Neue Session starten, oder `/reload-plugins` ins Eingabefeld tippen
+
+Danach öffnet `/glossar` das Pane.
 
 Braucht Claude Code ab Version 2.1.312; ein älteres `claude` meldet beim Laden einen Fehler, der mit `claude update` verschwindet.
 
